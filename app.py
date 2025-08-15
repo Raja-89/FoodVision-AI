@@ -44,9 +44,9 @@ FOOD_CLASSES = [
 ]
 
 # --- Model Loading Configuration ---
-# Your public Google Drive download URL
-MODEL_URL = "https://drive.google.com/uc?export=download&id=1vmgcyNQ-i_kpTgcnEW2qSJgb8KVS6_TR"
-MODEL_PATH = "food_classifier_model.pth"
+# Your new public download URL for the quantized model
+MODEL_URL = "https://drive.google.com/file/d/15oT_a-hPHFHCMUwseP4LCSBUgf9iQC7t/view?usp=sharing"
+MODEL_PATH = "food_classifier_model_quantized.pth"
 
 # Re-instantiate the same model architecture used for training
 def load_model():
@@ -55,13 +55,18 @@ def load_model():
     num_classes = len(FOOD_CLASSES)
     model.fc = nn.Linear(num_ftrs, num_classes)
     
-    # Load the saved state_dict
     state_dict = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
     model.load_state_dict(state_dict)
     
-    # Set the model to evaluation mode
     model.eval()
-    return model
+
+    # Apply dynamic quantization at load time to prepare for inference
+    model_quantized = torch.quantization.quantize_dynamic(
+        model, 
+        {torch.nn.Linear}, 
+        dtype=torch.qint8
+    )
+    return model_quantized
 
 # Load the model once when the application starts
 try:
