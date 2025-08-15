@@ -49,23 +49,27 @@ MODEL_URL = "https://drive.google.com/file/d/15oT_a-hPHFHCMUwseP4LCSBUgf9iQC7t/v
 MODEL_PATH = "food_classifier_model_quantized.pth"
 
 # Re-instantiate the same model architecture used for training
+# Re-instantiate the same model architecture used for training
 def load_model():
     model = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
     num_ftrs = model.fc.in_features
     num_classes = len(FOOD_CLASSES)
     model.fc = nn.Linear(num_ftrs, num_classes)
     
-    state_dict = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
-    model.load_state_dict(state_dict)
-    
-    model.eval()
-
-    # Apply dynamic quantization at load time to prepare for inference
+    # Apply dynamic quantization to the model architecture BEFORE loading the weights
     model_quantized = torch.quantization.quantize_dynamic(
         model, 
         {torch.nn.Linear}, 
         dtype=torch.qint8
     )
+
+    # Load the saved state_dict into the quantized model
+    state_dict = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
+    model_quantized.load_state_dict(state_dict)
+
+    # Set the model to evaluation mode
+    model_quantized.eval()
+
     return model_quantized
 
 # Load the model once when the application starts
