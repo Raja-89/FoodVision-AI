@@ -81,4 +81,3 @@ The application will be available at `http://127.0.0.1:5000`.
 
 ##  Acknowledgements
 
-A big thank you to **Rishabh Ranjan Singh** for his invaluable help and contributions to this project!
