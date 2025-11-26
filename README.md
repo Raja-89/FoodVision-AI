@@ -6,6 +6,7 @@ Welcome to FoodVision AI, a project that demonstrates the entire machine learnin
 
 ## ✨ Features
 
+
   * **101 Food Categories**: Classifies a wide variety of dishes from the challenging Food-101 dataset.
   * **Optimized for Mobile**: A lightweight frontend with client-side image resizing for a seamless experience on any device.
   * **High-Performance API**: A Flask backend that serves a quantized PyTorch model, ensuring fast and efficient predictions.
